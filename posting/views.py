@@ -5,7 +5,8 @@ from django.views          import View
 from django.http           import JsonResponse
 from django.core.paginator import Paginator
 
-from .models import Posting
+from .models               import Posting
+from .utils                import get_client_ip
 
 class PostingView(View):
     def post(self,request):
@@ -38,10 +39,11 @@ class PostingView(View):
         try:
             posting = Posting.objects.get(id=posting_id)
             posting_detail = [{
-                'id' : posting.id,
-                'name' : posting.name,
-                'title' : posting.title,
-                'contents' : posting.contents
+                'id'       : posting.id,
+                'name'     : posting.name,
+                'title'    : posting.title,
+                'contents' : posting.contents,
+                'user_ip'  : get_client_ip(request)
             }]
 
             return JsonResponse({'DETAIL' : posting_detail},status= 200)
@@ -55,10 +57,9 @@ class PostingView(View):
             contents = data.get('contents',posting.contents)
             title    = data.get('title',posting.title)
 
-
             Posting.objects.filter(id=posting_id).update(
                 contents = contents,
-                title = title
+                title    = title
             )
             return JsonResponse({'MESSAGE' : 'SUCCESS'},status = 201)
 
@@ -103,12 +104,13 @@ class PostingListView(View):
             page             = request.GET.get('page',1)
             paginator        = Paginator(Posting.objects.all(),16)
             posting_zip      = paginator.get_page(page)
-            posting_list = [{
+            posting_list     = [{
                 'id'         : posting.id,
                 'title'      : posting.title,
                 'created_at' : posting.created_at,
                 'updated_at' : posting.updated_at,
-                'name'       : posting.name
+                'name'       : posting.name,
+                'user_ip'    : get_client_ip(request)
             } for posting in posting_zip]
 
             return JsonResponse({'POSTING_LIST': posting_list},status=200)
