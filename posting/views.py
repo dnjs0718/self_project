@@ -94,9 +94,9 @@ class PasswordCheckView(View):
         except KeyError:
             return JsonResponse({'MESSAGE' : 'KEY ERROR'}, status = 400)
         except ValueError:
-            return JsonResponse({'MESSAGE' : 'VALUE ERROR'}, status = 400)   
+            return JsonResponse({'MESSAGE' : 'VALUE ERROR'}, status = 400)
         except Posting.DoesNotExist:
-            return JsonResponse({'MESSAGE': 'POSTING_DOES_NOT_EXIST'},status= 404)         
+            return JsonResponse({'MESSAGE': 'POSTING_DOES_NOT_EXIST'},status= 404)
 
 class PostingListView(View):
     def get(self,request):
